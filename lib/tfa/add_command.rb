@@ -6,8 +6,7 @@ module TFA
 
     def run(arguments)
       name = arguments.first
-      secret = arguments.last
-      @storage.save(name, secret)
+      @storage.save(arguments.first, arguments.last)
       "Added #{name}"
     end
   end
