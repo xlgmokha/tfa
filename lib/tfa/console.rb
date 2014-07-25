@@ -12,15 +12,14 @@ module TFA
     private
 
     def command_for(command_name)
-      case command_name
-      when "add"
-        AddCommand.new(@storage)
-      when "show"
-        ShowCommand.new(@storage)
-      when "totp"
-        TotpCommand.new(@storage)
-      else
-        UsageCommand.new(@storage)
+      registry[command_name].call
+    end
+
+    def registry
+      Hash.new { |x, y| lambda { UsageCommand.new(@storage) } }.tap do |commands|
+        commands['add'] = lambda { AddCommand.new(@storage) }
+        commands['show'] = lambda { ShowCommand.new(@storage) }
+        commands['totp'] = lambda { TotpCommand.new(@storage) }
       end
     end
   end
