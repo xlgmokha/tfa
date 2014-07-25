@@ -24,7 +24,7 @@ module TFA
             storage['production'] = "3"
           end
 
-          expect(subject.run([])).to eql(["1", "2", "3"])
+          expect(subject.run([])).to eql([{"development" => "1"}, { "staging" => "2" }, { "production" => "3" }])
         end
       end
     end

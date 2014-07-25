@@ -1,15 +1,13 @@
 module TFA
   class AddCommand
     def initialize(storage)
-      @storage = storage
+      @storage = Storage.new(storage)
     end
 
     def run(arguments)
       name = arguments.first
       secret = arguments.last
-      @storage.transaction do
-        @storage[name] = secret
-      end
+      @storage.save(name, secret)
       "Added #{name}"
     end
   end
