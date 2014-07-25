@@ -1,11 +1,10 @@
 module TFA
   class Console
-    def initialize(filename = "secrets")
+    def initialize(filename = "tfa")
       @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))
     end
 
-    def run(command)
-      arguments = command.split(' ')
+    def run(arguments)
       command_name = arguments.first
       command_for(command_name).run(arguments - [command_name])
     end
