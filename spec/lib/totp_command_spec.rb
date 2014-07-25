@@ -1,8 +1,8 @@
 module TFA
   describe TotpCommand do
     subject { TotpCommand.new(storage) }
-    let(:secret) { ::ROTP::Base32.random_base32 }
     let(:storage) { Storage.new(Tempfile.new('test').path) }
+    let(:storage) { Storage.new(SecureRandom.uuid) }
 
     def code_for(secret)
       ::ROTP::TOTP.new(secret).now
@@ -10,6 +10,8 @@ module TFA
 
     describe "#run" do
       context "when a single key is given" do
+        let(:secret) { ::ROTP::Base32.random_base32 }
+
         it "returns a time based one time password for the authentication secret given" do
           storage.save('development', secret)
           expect(subject.run(["development"])).to eql(code_for(secret))
