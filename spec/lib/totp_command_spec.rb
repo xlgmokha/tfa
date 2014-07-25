@@ -2,12 +2,10 @@ module TFA
   describe TotpCommand do
     subject { TotpCommand.new(storage) }
     let(:secret) { ::ROTP::Base32.random_base32 }
-    let(:storage) { PStore.new(Tempfile.new('test').path) }
+    let(:storage) { Storage.new(Tempfile.new('test').path) }
 
     before :each do
-      storage.transaction do
-        storage['development'] = secret
-      end
+      storage.save('development', secret)
     end
 
     describe "#run" do

@@ -1,7 +1,7 @@
 module TFA
   class Storage
-    def initialize(storage)
-      @storage = storage
+    def initialize(filename)
+      @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))
     end
 
     def all_secrets

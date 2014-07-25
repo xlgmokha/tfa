@@ -1,6 +1,7 @@
 module TFA
   class UsageCommand
     def initialize(storage)
+      @storage = storage
     end
 
     def run(arguments)

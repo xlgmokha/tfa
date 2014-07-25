@@ -1,7 +1,7 @@
 module TFA
   class Console
     def initialize(filename = "tfa")
-      @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))
+      @storage = Storage.new(filename)
     end
 
     def run(arguments)

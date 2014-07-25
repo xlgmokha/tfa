@@ -1,7 +1,7 @@
 module TFA
   class AddCommand
     def initialize(storage)
-      @storage = Storage.new(storage)
+      @storage = storage
     end
 
     def run(arguments)
