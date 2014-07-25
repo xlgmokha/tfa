@@ -1,6 +1,7 @@
 # tfa
 
 [![Build Status](https://travis-ci.org/mokhan/tfa.svg?branch=v0.0.2)](https://travis-ci.org/mokhan/tfa)
+[![Code Climate](https://codeclimate.com/github/mokhan/tfa.png)](https://codeclimate.com/github/mokhan/tfa)
 
 Create a one time password for your different environments.
 
