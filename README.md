@@ -1,6 +1,9 @@
 # In
 
-TODO: Write a gem description
+[![Build Status](https://travis-ci.org/mokhan/tfa.svg?branch=v0.0.2)](https://travis-ci.org/mokhan/tfa)
+
+Create a one time password for your different environments.
+
 
 ## Installation
 
@@ -18,7 +21,13 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+
+```shell
+  $ tfa add 
+  $ tfa add develoment <secret>
+  $ tfa show development
+  $ tfa totp development
+```
 
 ## Contributing
 
