@@ -3,8 +3,9 @@ require "pstore"
 
 module In
   class Console
-    def initialize(filename = "secrets")
+    def initialize(filename = "secrets", authenticator)
       @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))
+      @authenticator = authenticator
     end
 
     def run(command)
@@ -16,10 +17,13 @@ module In
     private
 
     def command_for(command_name)
-      if command_name == "add"
+      case command_name
+      when "add"
         AddCommand.new(@storage)
-      else
+      when "show"
         ShowCommand.new(@storage)
+      when "totp"
+        TotpCommand.new(@storage, @authenticator)
       end
     end
   end
@@ -49,6 +53,21 @@ module In
       @storage.transaction(true) do
         @storage[name]
       end
+    end
+  end
+
+  class TotpCommand
+    def initialize(storage, authenticator)
+      @storage = storage
+      @authenticator = authenticator
+    end
+
+    def run(arguments)
+      name = arguments.first
+      secret = @storage.transaction(true) do
+        @storage[name]
+      end
+      @authenticator.totp(secret)
     end
   end
 end
