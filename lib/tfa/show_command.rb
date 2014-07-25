@@ -5,9 +5,17 @@ module TFA
     end
 
     def run(arguments)
-      name = arguments.last
-      @storage.transaction(true) do
-        @storage[name]
+      if arguments.any?
+        name = arguments.last
+        @storage.transaction(true) do
+          @storage[name]
+        end
+      else
+        @storage.transaction(true) do
+          @storage.roots.map do |key|
+            @storage[key]
+          end
+        end
       end
     end
   end
