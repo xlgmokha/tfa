@@ -1,5 +1,3 @@
-require "tempfile"
-
 module TFA
   describe TotpCommand do
     subject { TotpCommand.new(storage) }
