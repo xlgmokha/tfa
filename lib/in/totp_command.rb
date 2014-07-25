@@ -6,10 +6,15 @@ module In
 
     def run(arguments)
       name = arguments.first
-      secret = @storage.transaction(true) do
+      ::ROTP::TOTP.new(secret_for(name)).now
+    end
+
+    private
+
+    def secret_for(name)
+      @storage.transaction(true) do
         @storage[name]
       end
-      ::ROTP::TOTP.new(secret).now
     end
   end
 end
