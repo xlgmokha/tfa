@@ -19,6 +19,8 @@ module TFA
         ShowCommand.new(@storage)
       when "totp"
         TotpCommand.new(@storage)
+      else
+        UsageCommand.new(@storage)
       end
     end
   end
