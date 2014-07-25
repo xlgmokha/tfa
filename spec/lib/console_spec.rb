@@ -1,8 +1,7 @@
 module In
   describe Console do
-    subject { Console.new('testing', authenticator) }
-    let(:secret) { SecureRandom.uuid }
-    let(:authenticator) { Object.new }
+    subject { Console.new('testing') }
+    let(:secret) { ::ROTP::Base32.random_base32 }
 
     it "saves a new secret" do
       subject.run("add development #{secret}")
@@ -10,11 +9,8 @@ module In
     end
 
     it "creates a totp for a certain key" do
-      totp = rand(100)
       subject.run("add development #{secret}")
-
-      authenticator.stub(:totp).with(secret).and_return(totp)
-      expect(subject.run("totp development")).to eql(totp)
+      expect(subject.run("totp development")).to_not be_nil
     end
   end
 end

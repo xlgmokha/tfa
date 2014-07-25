@@ -1,8 +1,7 @@
 module In
   class TotpCommand
-    def initialize(storage, authenticator)
+    def initialize(storage)
       @storage = storage
-      @authenticator = authenticator
     end
 
     def run(arguments)
@@ -10,7 +9,7 @@ module In
       secret = @storage.transaction(true) do
         @storage[name]
       end
-      @authenticator.totp(secret)
+      ::ROTP::TOTP.new(secret).now
     end
   end
 end

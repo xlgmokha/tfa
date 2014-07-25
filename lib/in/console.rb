@@ -1,8 +1,7 @@
 module In
   class Console
-    def initialize(filename = "secrets", authenticator)
+    def initialize(filename = "secrets")
       @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))
-      @authenticator = authenticator
     end
 
     def run(command)
@@ -20,7 +19,7 @@ module In
       when "show"
         ShowCommand.new(@storage)
       when "totp"
-        TotpCommand.new(@storage, @authenticator)
+        TotpCommand.new(@storage)
       end
     end
   end
