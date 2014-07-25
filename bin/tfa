@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
 require 'tfa'
-;wa
 
-console = TFA::Console.new
-console.run(ARGV)
+puts TFA::Console.new.run(ARGV)
