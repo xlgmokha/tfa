@@ -1,4 +1,4 @@
-module In
+module TFA
   class AddCommand
     def initialize(storage)
       @storage = storage

@@ -1,4 +1,4 @@
-module In
+module TFA
   describe Console do
     subject { Console.new('testing') }
     let(:secret) { ::ROTP::Base32.random_base32 }

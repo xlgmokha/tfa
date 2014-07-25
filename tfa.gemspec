@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'in/version'
+require 'tfa/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "in"
-  spec.version       = In::VERSION
+  spec.name          = "tfa"
+  spec.version       = TFA::VERSION
   spec.authors       = ["mo khan"]
   spec.email         = ["mo@mokhan.ca"]
   spec.summary       = %q{A CLI to manage your one time passwords.}

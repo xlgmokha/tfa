@@ -1,6 +1,6 @@
 require "tempfile"
 
-module In
+module TFA
   describe TotpCommand do
     subject { TotpCommand.new(storage) }
     let(:secret) { ::ROTP::Base32.random_base32 }

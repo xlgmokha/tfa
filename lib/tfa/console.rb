@@ -1,4 +1,4 @@
-module In
+module TFA
   class Console
     def initialize(filename = "secrets")
       @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))

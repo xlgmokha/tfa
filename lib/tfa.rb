@@ -1,0 +1,7 @@
+require "pstore"
+require "rotp"
+require "tfa/version"
+require "tfa/add_command"
+require "tfa/show_command"
+require "tfa/totp_command"
+require "tfa/console"

@@ -1,7 +1,0 @@
-require "in/version"
-require "pstore"
-require "in/add_command"
-require "in/show_command"
-require "in/totp_command"
-require "in/console"
-require "rotp"

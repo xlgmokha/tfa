@@ -1,4 +1,4 @@
-module In
+module TFA
   describe ShowCommand do
     subject { ShowCommand.new(storage) }
     let(:storage) { PStore.new(Tempfile.new('blah').path) }
