@@ -5,7 +5,7 @@ module TFA
     end
 
     def run(arguments)
-      return password_for(secret_for(arguments.first)) if arguments.any?
+      return password_for(secret_for(arguments.first)) if valid?(arguments)
       all_passwords
     end
 
@@ -24,7 +24,11 @@ module TFA
     end
 
     def secret_for(key)
-      @storage.secret_for(key)     
+      @storage.secret_for(key)
+    end
+
+    def valid?(arguments)
+      arguments.any? && secret_for(arguments.first)
     end
   end
 end

@@ -31,6 +31,12 @@ module TFA
           ])
         end
       end
+
+      context 'when the key is not known' do
+        it "returns with nothing" do
+          expect(subject.run(["blah"])).to be_empty
+        end
+      end
     end
   end
 end
