@@ -13,7 +13,7 @@ module TFA
 
         it "returns a time based one time password for the authentication secret given" do
           storage.save('development', secret)
-          expect(subject.run(["development"])).to eql(code_for(secret))
+          expect(subject.run("development")).to eql(code_for(secret))
         end
       end
 
@@ -24,8 +24,8 @@ module TFA
         it "returns the one time password for all keys" do
           storage.save('development', development_secret)
           storage.save('staging', staging_secret)
-          expect(subject.run([])).to eql([
-            { 'development' => code_for(development_secret) }, 
+          expect(subject.run(nil)).to eql([
+            { 'development' => code_for(development_secret) },
             { 'staging' => code_for(staging_secret) }
           ])
         end

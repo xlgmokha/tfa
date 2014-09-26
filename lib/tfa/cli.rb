@@ -7,16 +7,17 @@ module TFA
 
     desc "add NAME SECRET", "add a new secret to the database"
     def add(name, secret)
-      AddCommand.new(storage).run([name, secret])
+      storage.save(name, secret)
+      "Added #{name}"
     end
 
     desc "show NAME", "shows the secret for the given key"
     def show(name = nil)
-      ShowCommand.new(storage).run([name].compact)
+      name ? storage.secret_for(name) : storage.all_secrets
     end
 
     desc "totp NAME", "generate a Time based One Time Password"
-    def totp(name)
+    def totp(name = nil)
       TotpCommand.new(storage).run([name])
     end
 

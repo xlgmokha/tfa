@@ -4,9 +4,9 @@ module TFA
       @storage = storage
     end
 
-    def run(arguments)
-      return password_for(secret_for(arguments.first)) if valid?(arguments)
-      all_passwords
+    def run(name)
+      secret = secret_for(name)
+      secret ? password_for(secret) : all_passwords
     end
 
     private
@@ -16,19 +16,15 @@ module TFA
     end
 
     def all_passwords
-      secrets = @storage.all_secrets
-      secrets.each do |hash|
-        hash[hash.keys.first] = password_for(hash[hash.keys.first])
+      @storage.all_secrets.tap do |secrets|
+        secrets.each do |hash|
+          hash[hash.keys.first] = password_for(hash[hash.keys.first])
+        end
       end
-      secrets
     end
 
     def secret_for(key)
       @storage.secret_for(key)
-    end
-
-    def valid?(arguments)
-      arguments.any? && secret_for(arguments.first)
     end
   end
 end
