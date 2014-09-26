@@ -1,10 +1,18 @@
 module TFA
   class Storage
+    include Enumerable
+
     def initialize(filename:)
       @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))
     end
 
-    def all_secrets
+    def each
+      all.each do |each|
+        yield each
+      end
+    end
+
+    def all
       open_readonly do |storage|
         storage.roots.map { |key| { key => storage[key] } }
       end

@@ -16,10 +16,8 @@ module TFA
     end
 
     def all_passwords
-      @storage.all_secrets.tap do |secrets|
-        secrets.each do |hash|
-          hash[hash.keys.first] = password_for(hash[hash.keys.first])
-        end
+      @storage.each do |hash|
+        hash[hash.keys.first] = password_for(hash[hash.keys.first])
       end
     end
 

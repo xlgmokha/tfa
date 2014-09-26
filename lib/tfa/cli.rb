@@ -13,7 +13,7 @@ module TFA
 
     desc "show NAME", "shows the secret for the given key"
     def show(name = nil)
-      name ? storage.secret_for(name) : storage.all_secrets
+      name ? storage.secret_for(name) : storage.all
     end
 
     desc "totp NAME", "generate a Time based One Time Password"
