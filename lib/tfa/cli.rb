@@ -11,8 +11,8 @@ module TFA
     end
 
     desc "show NAME", "shows the secret for the given key"
-    def show(name)
-      ShowCommand.new(storage).run([name])
+    def show(name = nil)
+      ShowCommand.new(storage).run([name].compact)
     end
 
     desc "totp NAME", "generate a Time based One Time Password"
