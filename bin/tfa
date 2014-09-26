@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require 'tfa'
 
-TFA::CLI.start(ARGV)
+puts TFA::CLI.start(ARGV)
