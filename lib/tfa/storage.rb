@@ -1,6 +1,6 @@
 module TFA
   class Storage
-    def initialize(filename)
+    def initialize(filename:)
       @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))
     end
 

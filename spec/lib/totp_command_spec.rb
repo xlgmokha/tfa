@@ -1,8 +1,7 @@
 module TFA
   describe TotpCommand do
     subject { TotpCommand.new(storage) }
-    let(:storage) { Storage.new(Tempfile.new('test').path) }
-    let(:storage) { Storage.new(SecureRandom.uuid) }
+    let(:storage) { Storage.new(filename: SecureRandom.uuid) }
 
     def code_for(secret)
       ::ROTP::TOTP.new(secret).now

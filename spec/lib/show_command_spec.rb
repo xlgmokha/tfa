@@ -1,7 +1,7 @@
 module TFA
   describe ShowCommand do
     subject { ShowCommand.new(storage) }
-    let(:storage) { Storage.new(SecureRandom.uuid) }
+    let(:storage) { Storage.new(filename: SecureRandom.uuid) }
 
     describe "#run" do
       context "when looking up the secret for a specific key" do
