@@ -2,8 +2,8 @@ module TFA
   class Storage
     include Enumerable
 
-    def initialize(filename:)
-      @storage = PStore.new(File.join(Dir.home, ".#{filename}.pstore"))
+    def initialize(options)
+      @storage = PStore.new(File.join(Dir.home, ".#{options[:filename]}.pstore"))
     end
 
     def each
