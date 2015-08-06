@@ -7,6 +7,7 @@ module TFA
 
     desc "add NAME SECRET", "add a new secret to the database"
     def add(name, secret)
+      secret = clean(secret)
       storage.save(name, secret)
       "Added #{name}"
     end
@@ -25,6 +26,14 @@ module TFA
 
     def storage
       @storage ||= Storage.new(filename: options[:filename] || 'tfa')
+    end
+
+    def clean(secret)
+      if secret.include?('=')
+        /secret=([^&]*)/.match(secret).captures.first
+      else
+        secret
+      end
     end
   end
 end
