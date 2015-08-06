@@ -29,7 +29,7 @@ module TFA
     end
 
     def clean(secret)
-      if secret.include?('=')
+      if secret.include?("=")
         /secret=([^&]*)/.match(secret).captures.first
       else
         secret
