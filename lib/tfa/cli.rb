@@ -18,7 +18,7 @@ module TFA
 
     desc "totp NAME", "generate a Time based One Time Password"
     def totp(name = nil)
-      TotpCommand.new(storage).run([name])
+      TotpCommand.new(storage).run(name)
     end
 
     private
