@@ -12,7 +12,11 @@ module TFA
     private
 
     def password_for(secret)
-      ::ROTP::TOTP.new(secret).now
+      begin
+        ::ROTP::TOTP.new(secret).now
+      rescue
+        "???"
+      end  
     end
 
     def all_passwords
