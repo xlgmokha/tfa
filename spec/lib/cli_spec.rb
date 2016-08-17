@@ -33,6 +33,20 @@ module TFA
           expect(subject.totp("development")).to eql(code_for(secret))
         end
       end
+
+      context "when no key is given" do
+        it "returns a time based one time password for all keys" do
+          secret1 = secret
+          secret2 = ::ROTP::Base32.random_base32
+
+          subject.add("development", secret1)
+          subject.add("production", secret2)
+
+          result = subject.totp.to_s
+          expect(result).to include(code_for(secret1))
+          expect(result).to include(code_for(secret2))
+        end
+      end
     end
   end
 end
