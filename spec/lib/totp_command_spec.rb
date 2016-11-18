@@ -24,7 +24,8 @@ module TFA
         it "returns the one time password for all keys" do
           storage.save("development", development_secret)
           storage.save("staging", staging_secret)
-          expect(subject.run(nil)).to eql([
+
+          expect(subject.run(nil)).to match_array([
             { "development" => code_for(development_secret) },
             { "staging" => code_for(staging_secret) }
           ])
