@@ -36,6 +36,17 @@ module TFA
           expect(subject.run(["blah"])).to be_empty
         end
       end
+
+      context "when the secret is invalid" do
+        let(:invalid_secret) { "hello world" }
+
+        it 'returns an error message' do
+          storage.save('development', invalid_secret)
+          expect(subject.run(["development"])).to eql([
+            { 'development' => "INVALID SECRET" }
+          ])
+        end
+      end
     end
   end
 end
