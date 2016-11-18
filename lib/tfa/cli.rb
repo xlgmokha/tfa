@@ -12,6 +12,11 @@ module TFA
       "Added #{name}"
     end
 
+    desc "destroy NAME", "remove the secret associated with the name"
+    def destroy(name)
+      storage.delete(name)
+    end
+
     desc "show NAME", "shows the secret for the given key"
     def show(name = nil)
       name ? storage.secret_for(name) : storage.all

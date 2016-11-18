@@ -30,6 +30,12 @@ module TFA
       end
     end
 
+    def delete(key)
+      @storage.transaction do
+        @storage.delete(key)
+      end
+    end
+
     private
 
     def open_readonly

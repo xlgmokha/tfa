@@ -66,5 +66,16 @@ module TFA
         end
       end
     end
+
+    describe "#destroy" do
+      let(:name) { "development" }
+
+      it 'removes the secret with the given name' do
+        subject.add(name, dev_secret)
+        subject.destroy(name)
+
+        expect(subject.show(name)).to be_nil
+      end
+    end
   end
 end

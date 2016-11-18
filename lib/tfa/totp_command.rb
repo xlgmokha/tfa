@@ -13,7 +13,7 @@ module TFA
 
     def password_for(secret)
       ::ROTP::TOTP.new(secret).now
-    rescue ROTP::Base32::Base32Error => error
+    rescue ROTP::Base32::Base32Error
       "INVALID SECRET"
     end
 
