@@ -12,11 +12,9 @@ module TFA
     private
 
     def password_for(secret)
-      begin
-        ::ROTP::TOTP.new(secret).now
-      rescue
-        "???"
-      end  
+      ::ROTP::TOTP.new(secret).now
+    rescue ROTP::Base32::Base32Error
+      "INVALID SECRET"
     end
 
     def all_passwords

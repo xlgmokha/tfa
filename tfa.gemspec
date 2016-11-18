@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = TFA::VERSION
   spec.authors       = ["mo khan"]
   spec.email         = ["mo@mokhan.ca"]
-  spec.summary       = %q{A CLI to manage your one time passwords.}
-  spec.description   = %q{A CLI to manage your one time passwords.}
-  spec.homepage      = ""
+  spec.summary       = %q{A CLI to manage your time based one time passwords.}
+  spec.description   = %q{A CLI to manage your time based one time passwords.}
+  spec.homepage      = "https://github.com/mokhan/tfa/"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
