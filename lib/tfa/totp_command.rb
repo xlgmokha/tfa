@@ -4,8 +4,7 @@ module TFA
       @storage = storage
     end
 
-    def run(name)
-      secret = secret_for(name)
+    def run(name, secret = secret_for(name))
       secret ? password_for(secret) : all_passwords
     end
 

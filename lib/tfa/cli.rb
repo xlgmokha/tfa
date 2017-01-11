@@ -22,9 +22,14 @@ module TFA
       name ? storage.secret_for(name) : storage.all
     end
 
-    desc "totp NAME", "generate a Time based One Time Password"
+    desc "totp NAME", "generate a Time based One Time Password using the secret associated with the given NAME."
     def totp(name = nil)
       TotpCommand.new(storage).run(name)
+    end
+
+    desc "now SECRET", "generate a Time based One Time Password for the given secret"
+    def now(secret)
+      TotpCommand.new(storage).run('', secret)
     end
 
     private

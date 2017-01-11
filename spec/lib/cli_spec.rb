@@ -77,5 +77,11 @@ module TFA
         expect(subject.show(name)).to be_nil
       end
     end
+
+    describe "#now" do
+      it "returns a time based one time password for the given secret" do
+        expect(subject.now(dev_secret)).to eql(code_for(dev_secret))
+      end
+    end
   end
 end
