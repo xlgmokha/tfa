@@ -1,5 +1,6 @@
 require "pstore"
 require "rotp"
+require "openssl"
 require "tfa/version"
 require "tfa/totp_command"
 require "tfa/storage"
