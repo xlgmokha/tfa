@@ -40,19 +40,14 @@ module TFA
         return ""
       end
 
-      if yes? "Upgrade to #{yml_path}?"
+      if yes? "Upgrade to #{yaml_path}?"
         pstore_storage.each do |row|
           row.each do |name, secret|
             yaml_storage.save(name, secret) if yes?("Migrate `#{name}`?")
           end
         end
-        if yes? "Encrypt `#{yml_path}`?"
-          passphrase = ask "Enter passphrase:", echo: false
-          say passphrase
-        end
-        if yes? "Delete `#{pstore_path}`?"
-          File.delete(pstore_path)
-        end
+        yaml_storage.encrypt!(passphrase) if yes?("Encrypt?")
+        File.delete(pstore_path) if yes?("Delete `#{pstore_path}`?")
       end
       ""
     end
@@ -68,7 +63,7 @@ module TFA
     end
 
     def yaml_storage
-      @yaml_storage ||= Storage.new(yml_path)
+      @yaml_storage ||= Storage.new(yaml_path)
     end
 
     def filename
@@ -83,7 +78,7 @@ module TFA
       File.join(directory, ".#{filename}.pstore")
     end
 
-    def yml_path
+    def yaml_path
       File.join(directory, ".#{filename}.yml")
     end
 
@@ -93,6 +88,10 @@ module TFA
       else
         secret
       end
+    end
+
+    def passphrase
+      @passphrase ||= ask("Enter passphrase:", echo: false)
     end
   end
 end
