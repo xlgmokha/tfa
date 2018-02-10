@@ -3,7 +3,8 @@ module TFA
     include Enumerable
 
     def initialize(options)
-      @storage = PStore.new(File.join(Dir.home, ".#{options[:filename]}.pstore"))
+      partial_path = File.join(Dir.home, ".#{options[:filename]}")
+      @storage = PStore.new("#{partial_path}.pstore")
     end
 
     def each
