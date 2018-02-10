@@ -1,7 +1,7 @@
 module TFA
   describe TotpCommand do
     subject { TotpCommand.new(storage) }
-    let(:storage) { Storage.new(filename: SecureRandom.uuid, directory: Dir.tmpdir) }
+    let(:storage) { Storage.new(File.join(Dir.tmpdir, ".#{SecureRandom.uuid}.yml")) }
 
     def code_for(secret)
       ::ROTP::TOTP.new(secret).now

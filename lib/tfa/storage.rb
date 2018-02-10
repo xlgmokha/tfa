@@ -2,14 +2,13 @@ module TFA
   class Storage
     include Enumerable
 
-    def initialize(filename: 'tfa', directory: Dir.home)
-      pstore_path = File.join(directory, ".#{filename}.pstore")
-      if File.exist?(pstore_path)
-        @storage = PStore.new(pstore_path)
-      else
-        path = File.join(directory, ".#{filename}.yml")
-        @storage = YAML::Store.new(path)
-      end
+    def initialize(path)
+      @storage =
+        if ".pstore" == File.extname(path)
+          PStore.new(path)
+        else
+          YAML::Store.new(path)
+        end
     end
 
     def each

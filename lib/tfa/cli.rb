@@ -33,13 +33,61 @@ module TFA
       TotpCommand.new(storage).run('', secret)
     end
 
+    desc "upgrade", "upgrade the pstore database to a yml database."
+    def upgrade
+      pstore_path = File.join(directory, ".#{filename}.pstore")
+      yml_path = File.join(directory, ".#{filename}.yml")
+
+      if !File.exist?(pstore_path)
+        say "Unable to detect #{pstore_path}"
+        return ""
+      end
+
+      say "Detected #{pstore_path}"
+      case ask "Would you like to upgrade to #{yml_path}", limited_to: ["yes", "no"]
+      when "yes"
+        say "Let's begin..."
+        pstore_storage = Storage.new(pstore_path)
+        yaml_storage = Storage.new(yml_path)
+        pstore_storage.each do |row|
+          row.each do |name, secret|
+            case ask "Would you like to migrate `#{name}`?", limited_to: ["yes", "no"]
+            when "yes"
+              say "Migrating `#{name}`..."
+              yaml_storage.save(name, secret)
+            end
+          end
+        end
+        case ask "Would you like to delete `#{pstore_path}`? (this action cannot be undone.)", limited_to: ["yes", "no"]
+        when "yes"
+          File.delete(pstore_path)
+        end
+      else
+        say "Nothing to do. Goodbye!"
+      end
+      ""
+    end
+
     private
 
     def storage
-      @storage ||= Storage.new(
-        filename: options[:filename] || 'tfa',
-        directory: options[:directory] || Dir.home,
-      )
+      @storage ||= Storage.new(File.exist?(pstore_path) ? pstore_path : yml_path)
+    end
+
+    def filename
+      options[:filename] || 'tfa'
+    end
+
+    def directory
+      options[:directory] || Dir.home
+    end
+
+    def pstore_path
+      File.join(directory, ".#{filename}.pstore")
+    end
+
+    def yml_path
+      File.join(directory, ".#{filename}.yml")
     end
 
     def clean(secret)
