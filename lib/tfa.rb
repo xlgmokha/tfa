@@ -1,4 +1,5 @@
 require "pstore"
+require "yaml/store"
 require "rotp"
 require "openssl"
 require "tfa/version"

@@ -1,6 +1,6 @@
 module TFA
   describe CLI do
-    subject { CLI.new }
+    subject { CLI.new([], filename: SecureRandom.uuid) }
 
     def code_for(secret)
       ::ROTP::TOTP.new(secret).now
@@ -10,10 +10,12 @@ module TFA
     let(:prod_secret) { ::ROTP::Base32.random_base32 }
 
     describe "#add" do
+      let(:key) { SecureRandom.uuid }
+
       context "when a secret is added" do
         it "adds the secret" do
-          subject.add("development", dev_secret)
-          expect(subject.show("development")).to eql(dev_secret)
+          subject.add(key, dev_secret)
+          expect(subject.show(key)).to eql(dev_secret)
         end
       end
 
@@ -21,23 +23,26 @@ module TFA
         it "strips out the url for just the secret" do
           url = "otpauth://totp/email@email.com?secret=#{dev_secret}&issuer="
 
-          subject.add("development", url)
-          expect(subject.show("development")).to eql(dev_secret)
+          subject.add(key, url)
+          expect(subject.show(key)).to eql(dev_secret)
         end
       end
     end
 
     describe "#show" do
       context "when a single key is given" do
+        let(:key) { SecureRandom.uuid }
+
         it "returns the secret" do
-          subject.add("development", dev_secret)
-          expect(subject.show("development")).to eql(dev_secret)
+          subject.add(key, dev_secret)
+          expect(subject.show(key)).to eql(dev_secret)
         end
       end
 
       context "when no key is given" do
         it "returns the secret for all keys" do
-          subject.add("development", dev_secret)
+          key = SecureRandom.uuid
+          subject.add(key, dev_secret)
           subject.add("production", prod_secret)
 
           result = subject.show.to_s
@@ -50,15 +55,16 @@ module TFA
     describe "#totp" do
       context "when a single key is given" do
         it "returns a time based one time password" do
-          subject.add("development", dev_secret)
-          expect(subject.totp("development")).to eql(code_for(dev_secret))
+          key = SecureRandom.uuid
+          subject.add(key, dev_secret)
+          expect(subject.totp(key)).to eql(code_for(dev_secret))
         end
       end
 
       context "when no key is given" do
         it "returns a time based one time password for all keys" do
-          subject.add("development", dev_secret)
-          subject.add("production", prod_secret)
+          subject.add(SecureRandom.uuid, dev_secret)
+          subject.add(SecureRandom.uuid, prod_secret)
 
           result = subject.totp.to_s
           expect(result).to include(code_for(dev_secret))

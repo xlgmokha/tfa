@@ -3,8 +3,13 @@ module TFA
     include Enumerable
 
     def initialize(options)
-      partial_path = File.join(Dir.home, ".#{options[:filename]}")
-      @storage = PStore.new("#{partial_path}.pstore")
+      pstore_path = File.join(Dir.home, ".#{options[:filename]}.pstore")
+      if File.exist?(pstore_path)
+        @storage = PStore.new(pstore_path)
+      else
+        path = File.join(Dir.home, ".#{options[:filename]}.yml")
+        @storage = YAML::Store.new(path)
+      end
     end
 
     def each
