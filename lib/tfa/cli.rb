@@ -8,8 +8,7 @@ module TFA
 
     desc "add NAME SECRET", "add a new secret to the database"
     def add(name, secret)
-      secret = clean(secret)
-      storage.save(name, secret)
+      storage.save(name, clean(secret))
       "Added #{name}"
     end
 
@@ -21,11 +20,15 @@ module TFA
     desc "show NAME", "shows the secret for the given key"
     def show(name = nil)
       name ? storage.secret_for(name) : storage.all
+    rescue Psych::SyntaxError
+      say_status :error, "Unable to open database. Is it encrypted?", :red
     end
 
     desc "totp NAME", "generate a Time based One Time Password using the secret associated with the given NAME."
     def totp(name = nil)
       TotpCommand.new(storage).run(name)
+    rescue Psych::SyntaxError
+      say_status :error, "Unable to open database. Is it encrypted?", :red
     end
 
     desc "now SECRET", "generate a Time based One Time Password for the given secret"
@@ -36,8 +39,8 @@ module TFA
     desc "upgrade", "upgrade the pstore database to a yml database."
     def upgrade
       if !File.exist?(pstore_path)
-        say_status :error, "Unable to detect #{pstore_path}"
-        return ""
+        say_status :error, "Unable to detect #{pstore_path}", :red
+        return
       end
 
       if yes? "Upgrade to #{yaml_path}?"
@@ -46,10 +49,22 @@ module TFA
             yaml_storage.save(name, secret) if yes?("Migrate `#{name}`?")
           end
         end
-        yaml_storage.encrypt!(passphrase) if yes?("Encrypt?")
         File.delete(pstore_path) if yes?("Delete `#{pstore_path}`?")
       end
-      ""
+    end
+
+    desc "encrypt", "encrypts the tfa database"
+    def encrypt
+      return unless ensure_upgraded!
+
+      yaml_storage.encrypt!(passphrase)
+    end
+
+    desc "decrypt", "decrypts the tfa database"
+    def decrypt
+      return unless ensure_upgraded!
+
+      yaml_storage.decrypt!(passphrase)
     end
 
     private
@@ -92,6 +107,15 @@ module TFA
 
     def passphrase
       @passphrase ||= ask("Enter passphrase:", echo: false)
+    end
+
+    def ensure_upgraded!
+      if File.exist?(pstore_path)
+        say_status :error, "Use the `upgrade` command to upgrade your database.", :red
+        false
+      else
+        true
+      end
     end
   end
 end

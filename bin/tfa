@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
 require 'tfa'
 
-puts TFA::CLI.start(ARGV)
+result = TFA::CLI.start(ARGV)
+puts result unless result.is_a?(IO)
