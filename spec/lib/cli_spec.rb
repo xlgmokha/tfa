@@ -1,6 +1,6 @@
 module TFA
   describe CLI do
-    subject { CLI.new([], filename: SecureRandom.uuid) }
+    subject { CLI.new([], filename: SecureRandom.uuid, directory: Dir.tmpdir) }
 
     def code_for(secret)
       ::ROTP::TOTP.new(secret).now

@@ -4,6 +4,7 @@ module TFA
   class CLI < Thor
     package_name "TFA"
     class_option :filename
+    class_option :directory
 
     desc "add NAME SECRET", "add a new secret to the database"
     def add(name, secret)
@@ -35,7 +36,10 @@ module TFA
     private
 
     def storage
-      @storage ||= Storage.new(filename: options[:filename] || 'tfa')
+      @storage ||= Storage.new(
+        filename: options[:filename] || 'tfa',
+        directory: options[:directory] || Dir.home,
+      )
     end
 
     def clean(secret)
