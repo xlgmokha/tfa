@@ -46,6 +46,10 @@ module TFA
             yaml_storage.save(name, secret) if yes?("Migrate `#{name}`?")
           end
         end
+        if yes? "Encrypt `#{yml_path}`?"
+          passphrase = ask "Enter passphrase:", echo: false
+          say passphrase
+        end
         if yes? "Delete `#{pstore_path}`?"
           File.delete(pstore_path)
         end
