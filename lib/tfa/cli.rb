@@ -45,6 +45,7 @@ module TFA
       end
 
       if yes? "Upgrade to #{yaml_path}?"
+        yaml_storage
         pstore_storage.each do |row|
           row.each do |name, secret|
             yaml_storage.save(name, secret) if yes?("Migrate `#{name}`?")
@@ -107,7 +108,12 @@ module TFA
     end
 
     def passphrase
-      @passphrase ||= options[:passphrase] || ask("Enter passphrase:", echo: false)
+      @passphrase ||=
+        begin
+          result = options[:passphrase] || ask("Enter passphrase:", echo: false)
+          raise "Invalid Passphrase" if result.nil? || result.strip.empty?
+          result
+        end
     end
 
     def ensure_upgraded!
