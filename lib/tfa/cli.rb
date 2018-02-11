@@ -110,7 +110,7 @@ module TFA
     def passphrase
       @passphrase ||=
         begin
-          result = options[:passphrase] || ask("Enter passphrase:", echo: false)
+          result = options[:passphrase] || ask("Enter passphrase:\n", echo: false)
           raise "Invalid Passphrase" if result.nil? || result.strip.empty?
           result
         end
