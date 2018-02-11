@@ -42,9 +42,21 @@ module TFA
       super unless @original.respond_to?(name)
 
       was_encrypted = encrypted?
-      decrypt! if was_encrypted
+      if was_encrypted
+        encrypted_content = IO.read(@original.path)
+        decrypt!
+      end
+      original_sha256 = Digest::SHA256.file(@original.path)
       result = @original.public_send(name, *args, &block)
-      encrypt! if was_encrypted
+      if was_encrypted
+        new_sha256 = Digest::SHA256.file(@original.path)
+
+        if original_sha256 == new_sha256
+          IO.write(@original.path, encrypted_content)
+        else
+          encrypt!
+        end
+      end
       result
     end
 
