@@ -1,14 +1,14 @@
 module TFA
   class SecureProxy
-    def initialize(original, passphrase)
+    def initialize(original, passphrase_request)
       @original = original
-      @digest = Digest::SHA256.digest(passphrase)
+      @passphrase_request = passphrase_request
     end
 
     def encrypt!(algorithm = "AES-256-CBC")
       cipher = OpenSSL::Cipher.new(algorithm)
       cipher.encrypt
-      cipher.key = @digest
+      cipher.key = digest
       cipher.iv = iv = cipher.random_iv
       plain_text = IO.read(@original.path)
       json = JSON.generate(
@@ -23,9 +23,17 @@ module TFA
       data = JSON.parse(IO.read(@original.path), symbolize_names: true)
       decipher = OpenSSL::Cipher.new(data[:algorithm])
       decipher.decrypt
-      decipher.key = @digest
+      decipher.key = digest
       decipher.iv = Base64.decode64(data[:iv])
       IO.write(@original.path, decipher.update(Base64.decode64(data[:cipher_text])) + decipher.final)
+    end
+
+    def encrypted?
+      return false unless File.exist?(@original.path)
+      JSON.parse(IO.read(@original.path))
+      true
+    rescue JSON::ParserError
+      false
     end
 
     private
@@ -40,12 +48,8 @@ module TFA
       result
     end
 
-    def encrypted?
-      return false unless File.exist?(@original.path)
-      JSON.parse(IO.read(@original.path))
-      true
-    rescue JSON::ParseError
-      false
+    def digest
+      @digest ||= Digest::SHA256.digest(@passphrase_request.call)
     end
   end
 end
