@@ -33,22 +33,22 @@ module TFA
       TotpCommand.new(storage).run('', secret)
     end
 
-    desc "upgrade", "upgrade the pstore database to a yml database."
+    desc "upgrade", "upgrade the database."
     def upgrade
       if !File.exist?(pstore_path)
         say_status :error, "Unable to detect #{pstore_path}", :red
         return
       end
-      if File.exist?(yaml_path)
+      if File.exist?(secure_path)
         say_status :error, "The new database format was detected.", :red
         return
       end
 
-      if yes? "Upgrade to #{yaml_path}?"
-        yaml_storage
+      if yes? "Upgrade to #{secure_path}?"
+        secure_storage
         pstore_storage.each do |row|
           row.each do |name, secret|
-            yaml_storage.save(name, secret) if yes?("Migrate `#{name}`?")
+            secure_storage.save(name, secret) if yes?("Migrate `#{name}`?")
           end
         end
         File.delete(pstore_path) if yes?("Delete `#{pstore_path}`?")
@@ -59,32 +59,32 @@ module TFA
     def encrypt
       return unless ensure_upgraded!
 
-      yaml_storage.encrypt!
+      secure_storage.encrypt!
     end
 
     desc "decrypt", "decrypts the tfa database"
     def decrypt
       return unless ensure_upgraded!
 
-      yaml_storage.decrypt!
+      secure_storage.decrypt!
     end
 
     private
 
     def storage
-      File.exist?(pstore_path) ? pstore_storage : yaml_storage
+      File.exist?(pstore_path) ? pstore_storage : secure_storage
     end
 
     def pstore_storage
       @pstore_storage ||= Storage.new(pstore_path)
     end
 
-    def yaml_storage
-      @yaml_storage ||= SecureStorage.new(Storage.new(yaml_path), ->{ passphrase })
+    def secure_storage
+      @secure_storage ||= SecureStorage.new(Storage.new(secure_path), ->{ passphrase })
     end
 
     def filename
-      options[:filename] || 'tfa'
+      options[:filename] || '.tfa'
     end
 
     def directory
@@ -92,11 +92,11 @@ module TFA
     end
 
     def pstore_path
-      File.join(directory, ".#{filename}.pstore")
+      File.join(directory, "#{filename}.pstore")
     end
 
-    def yaml_path
-      File.join(directory, ".#{filename}.yml")
+    def secure_path
+      File.join(directory, filename)
     end
 
     def clean(secret)
@@ -126,7 +126,7 @@ module TFA
     end
 
     def upgraded?
-      !File.exist?(pstore_path) && File.exist?(yaml_path)
+      !File.exist?(pstore_path) && File.exist?(secure_path)
     end
   end
 end
