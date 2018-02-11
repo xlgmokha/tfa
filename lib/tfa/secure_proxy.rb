@@ -5,30 +5,29 @@ module TFA
       @digest = Digest::SHA256.digest(passphrase)
     end
 
-    def encrypt!
-      cipher = OpenSSL::Cipher.new("AES-256-CBC")
+    def encrypt!(algorithm = "AES-256-CBC")
+      cipher = OpenSSL::Cipher.new(algorithm)
       cipher.encrypt
       cipher.key = @digest
-      #iv = cipher.random_iv
-      #cipher.iv = iv
-
-      plain_text = read_all
-      #cipher_text = iv + cipher.update(plain_text) + cipher.final
-      cipher_text = cipher.update(plain_text) + cipher.final
-      flush(cipher_text)
+      cipher.iv = iv = cipher.random_iv
+      plain_text = IO.read(@original.path)
+      json = JSON.generate(
+        algorithm: algorithm,
+        iv: Base64.encode64(iv),
+        cipher_text: Base64.encode64(cipher.update(plain_text) + cipher.final),
+      )
+      IO.write(@original.path, json)
     end
 
     def decrypt!
       return unless File.exist?(@original.path)
 
-      cipher_text = read_all
-      decipher = OpenSSL::Cipher.new("AES-256-CBC")
+      data = JSON.parse(IO.read(@original.path), symbolize_names: true)
+      decipher = OpenSSL::Cipher.new(data[:algorithm])
       decipher.decrypt
-      #decipher.iv = cipher_text[0..decipher.iv_len-1]
       decipher.key = @digest
-      #data = cipher_text[decipher.iv_len..-1]
-      data = cipher_text
-      flush(decipher.update(data) + decipher.final)
+      decipher.iv = Base64.decode64(data[:iv])
+      IO.write(@original.path, decipher.update(Base64.decode64(data[:cipher_text])) + decipher.final)
     end
 
     private
@@ -40,14 +39,6 @@ module TFA
       result = @original.public_send(name, *args, &block)
       encrypt!
       result
-    end
-
-    def read_all
-      IO.read(@original.path)
-    end
-
-    def flush(data)
-      IO.write(@original.path, data)
     end
   end
 end
