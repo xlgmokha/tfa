@@ -1,5 +1,5 @@
 module TFA
-  class SecureProxy
+  class SecureStorage
     def initialize(original, passphrase_request)
       @original = original
       @passphrase_request = passphrase_request
@@ -45,8 +45,8 @@ module TFA
       if was_encrypted
         encrypted_content = IO.read(@original.path)
         decrypt!
+        original_sha256 = Digest::SHA256.file(@original.path)
       end
-      original_sha256 = Digest::SHA256.file(@original.path)
       result = @original.public_send(name, *args, &block)
       if was_encrypted
         new_sha256 = Digest::SHA256.file(@original.path)

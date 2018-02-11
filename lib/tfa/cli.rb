@@ -80,7 +80,7 @@ module TFA
     end
 
     def yaml_storage
-      @yaml_storage ||= SecureProxy.new(Storage.new(yaml_path), ->{ passphrase })
+      @yaml_storage ||= SecureStorage.new(Storage.new(yaml_path), ->{ passphrase })
     end
 
     def filename

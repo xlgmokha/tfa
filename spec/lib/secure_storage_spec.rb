@@ -1,5 +1,5 @@
 module TFA
-  describe SecureProxy do
+  describe SecureStorage do
     subject { described_class.new(original, passphrase) }
     let(:original) { Tempfile.new('tfa') }
     let(:passphrase) { -> { SecureRandom.uuid } }
