@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 require 'tfa'
 
-result = TFA::CLI.start(ARGV)
-puts result unless result.is_a?(IO)
+begin
+  result = TFA::CLI.start(ARGV)
+  puts result unless result.is_a?(IO)
+rescue OpenSSL::Cipher::CipherError => error
+  puts error.message
+end

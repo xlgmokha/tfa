@@ -20,8 +20,6 @@ module TFA
     end
 
     def decrypt!
-      return unless File.exist?(@original.path)
-
       data = JSON.parse(IO.read(@original.path), symbolize_names: true)
       decipher = OpenSSL::Cipher.new(data[:algorithm])
       decipher.decrypt
@@ -35,10 +33,19 @@ module TFA
     def method_missing(name, *args, &block)
       super unless @original.respond_to?(name)
 
-      decrypt!
+      was_encrypted = encrypted?
+      decrypt! if was_encrypted
       result = @original.public_send(name, *args, &block)
-      encrypt!
+      encrypt! if was_encrypted
       result
+    end
+
+    def encrypted?
+      return false unless File.exist?(@original.path)
+      JSON.parse(IO.read(@original.path))
+      true
+    rescue JSON::ParseError
+      false
     end
   end
 end
