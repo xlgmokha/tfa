@@ -44,22 +44,26 @@ module TFA
     end
 
     def encrypt!(passphrase)
+      cipher = OpenSSL::Cipher.new("AES-256-CBC")
       cipher.encrypt
-      cipher.key = Digest::SHA256.digest(passphrase)
-      cipher.iv = cipher.random_iv
+      cipher.key = digest_for(passphrase)
+      #iv = cipher.random_iv
+      #cipher.iv = iv
 
       plain_text = read_all
+      #cipher_text = iv + cipher.update(plain_text) + cipher.final
       cipher_text = cipher.update(plain_text) + cipher.final
       flush(cipher_text)
     end
 
     def decrypt!(passphrase)
       cipher_text = read_all
-      decipher = cipher
+      decipher = OpenSSL::Cipher.new("AES-256-CBC")
       decipher.decrypt
-      decipher.iv = cipher_text[0..decipher.iv_len-1]
-      cipher.key = Digest::SHA256.digest(passphrase)
-      data = cipher_text[decipher.iv_len..-1]
+      #decipher.iv = cipher_text[0..decipher.iv_len-1]
+      decipher.key = digest_for(passphrase)
+      #data = cipher_text[decipher.iv_len..-1]
+      data = cipher_text
       flush(decipher.update(data) + decipher.final)
     end
 
@@ -71,16 +75,16 @@ module TFA
       end
     end
 
-    def cipher
-      @cipher ||= OpenSSL::Cipher.new("AES-256-CBC")
-    end
-
     def read_all
       IO.read(path)
     end
 
     def flush(data)
       IO.write(path, data)
+    end
+
+    def digest_for(passphrase)
+      Digest::SHA256.digest(passphrase)
     end
   end
 end

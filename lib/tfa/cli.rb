@@ -5,6 +5,7 @@ module TFA
     package_name "TFA"
     class_option :filename
     class_option :directory
+    class_option :passphrase
 
     desc "add NAME SECRET", "add a new secret to the database"
     def add(name, secret)
@@ -37,9 +38,7 @@ module TFA
 
     desc "now SECRET", "generate a Time based One Time Password for the given secret"
     def now(secret)
-      open_database do
-        TotpCommand.new(storage).run('', secret)
-      end
+      TotpCommand.new(storage).run('', secret)
     end
 
     desc "upgrade", "upgrade the pstore database to a yml database."
@@ -117,7 +116,7 @@ module TFA
     end
 
     def passphrase
-      @passphrase ||= ask("Enter passphrase:", echo: false)
+      @passphrase ||= options[:passphrase] || ask("Enter passphrase:", echo: false)
     end
 
     def ensure_upgraded!
@@ -134,9 +133,7 @@ module TFA
     end
 
     def open_database
-      if upgraded?
-        yaml_storage.decrypt!(passphrase)
-      end
+      yaml_storage.decrypt!(passphrase) if upgraded?
       result = yield
       yaml_storage.encrypt!(passphrase)
       result
