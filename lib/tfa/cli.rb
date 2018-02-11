@@ -9,31 +9,23 @@ module TFA
 
     desc "add NAME SECRET", "add a new secret to the database"
     def add(name, secret)
-      open_database do
-        storage.save(name, clean(secret))
-      end
+      storage.save(name, clean(secret))
       "Added #{name}"
     end
 
     desc "destroy NAME", "remove the secret associated with the name"
     def destroy(name)
-      open_database do
-        storage.delete(name)
-      end
+      storage.delete(name)
     end
 
     desc "show NAME", "shows the secret for the given key"
     def show(name = nil)
-      open_database do
-        name ? storage.secret_for(name) : storage.all
-      end
+      name ? storage.secret_for(name) : storage.all
     end
 
     desc "totp NAME", "generate a Time based One Time Password using the secret associated with the given NAME."
     def totp(name = nil)
-      open_database do
-        TotpCommand.new(storage).run(name)
-      end
+      TotpCommand.new(storage).run(name)
     end
 
     desc "now SECRET", "generate a Time based One Time Password for the given secret"
@@ -58,7 +50,6 @@ module TFA
             yaml_storage.save(name, secret) if yes?("Migrate `#{name}`?")
           end
         end
-        yaml_storage.encrypt!(passphrase)
         File.delete(pstore_path) if yes?("Delete `#{pstore_path}`?")
       end
     end
@@ -67,14 +58,14 @@ module TFA
     def encrypt
       return unless ensure_upgraded!
 
-      yaml_storage.encrypt!(passphrase)
+      yaml_storage.encrypt!
     end
 
     desc "decrypt", "decrypts the tfa database"
     def decrypt
       return unless ensure_upgraded!
 
-      yaml_storage.decrypt!(passphrase)
+      yaml_storage.decrypt!
     end
 
     private
@@ -88,7 +79,7 @@ module TFA
     end
 
     def yaml_storage
-      @yaml_storage ||= Storage.new(yaml_path)
+      @yaml_storage ||= SecureProxy.new(Storage.new(yaml_path), passphrase)
     end
 
     def filename
@@ -130,13 +121,6 @@ module TFA
 
     def upgraded?
       !File.exist?(pstore_path) && File.exist?(yaml_path)
-    end
-
-    def open_database
-      yaml_storage.decrypt!(passphrase) if upgraded?
-      result = yield
-      yaml_storage.encrypt!(passphrase)
-      result
     end
   end
 end

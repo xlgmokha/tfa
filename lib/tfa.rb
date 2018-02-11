@@ -6,6 +6,7 @@ require "rotp"
 require "yaml/store"
 
 require "tfa/cli"
+require "tfa/secure_proxy"
 require "tfa/storage"
 require "tfa/totp_command"
 require "tfa/version"
