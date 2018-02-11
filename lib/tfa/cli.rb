@@ -8,38 +8,48 @@ module TFA
 
     desc "add NAME SECRET", "add a new secret to the database"
     def add(name, secret)
-      storage.save(name, clean(secret))
+      open_database do
+        storage.save(name, clean(secret))
+      end
       "Added #{name}"
     end
 
     desc "destroy NAME", "remove the secret associated with the name"
     def destroy(name)
-      storage.delete(name)
+      open_database do
+        storage.delete(name)
+      end
     end
 
     desc "show NAME", "shows the secret for the given key"
     def show(name = nil)
-      name ? storage.secret_for(name) : storage.all
-    rescue Psych::SyntaxError
-      say_status :error, "Unable to open database. Is it encrypted?", :red
+      open_database do
+        name ? storage.secret_for(name) : storage.all
+      end
     end
 
     desc "totp NAME", "generate a Time based One Time Password using the secret associated with the given NAME."
     def totp(name = nil)
-      TotpCommand.new(storage).run(name)
-    rescue Psych::SyntaxError
-      say_status :error, "Unable to open database. Is it encrypted?", :red
+      open_database do
+        TotpCommand.new(storage).run(name)
+      end
     end
 
     desc "now SECRET", "generate a Time based One Time Password for the given secret"
     def now(secret)
-      TotpCommand.new(storage).run('', secret)
+      open_database do
+        TotpCommand.new(storage).run('', secret)
+      end
     end
 
     desc "upgrade", "upgrade the pstore database to a yml database."
     def upgrade
       if !File.exist?(pstore_path)
         say_status :error, "Unable to detect #{pstore_path}", :red
+        return
+      end
+      if File.exist?(yaml_path)
+        say_status :error, "The new database format was detected.", :red
         return
       end
 
@@ -49,6 +59,7 @@ module TFA
             yaml_storage.save(name, secret) if yes?("Migrate `#{name}`?")
           end
         end
+        yaml_storage.encrypt!(passphrase)
         File.delete(pstore_path) if yes?("Delete `#{pstore_path}`?")
       end
     end
@@ -110,12 +121,25 @@ module TFA
     end
 
     def ensure_upgraded!
-      if File.exist?(pstore_path)
+      unless upgraded?
         say_status :error, "Use the `upgrade` command to upgrade your database.", :red
         false
       else
         true
       end
+    end
+
+    def upgraded?
+      !File.exist?(pstore_path) && File.exist?(yaml_path)
+    end
+
+    def open_database
+      if upgraded?
+        yaml_storage.decrypt!(passphrase)
+      end
+      result = yield
+      yaml_storage.encrypt!(passphrase)
+      result
     end
   end
 end
