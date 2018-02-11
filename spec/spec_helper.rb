@@ -18,6 +18,7 @@ require 'tfa'
 require 'securerandom'
 require 'tempfile'
 require 'tmpdir'
+require 'json'
 RSpec.configure do |config|
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
