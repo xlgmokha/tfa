@@ -2,7 +2,7 @@ module TFA
   describe SecureProxy do
     subject { described_class.new(original, passphrase) }
     let(:original) { Tempfile.new('tfa') }
-    let(:passphrase) { SecureRandom.uuid }
+    let(:passphrase) { -> { SecureRandom.uuid } }
 
     after { original.unlink }
 
