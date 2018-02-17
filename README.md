@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/mokhan/tfa.svg?branch=v0.0.2)](https://travis-ci.org/mokhan/tfa)
 [![Code Climate](https://codeclimate.com/github/mokhan/tfa.png)](https://codeclimate.com/github/mokhan/tfa)
-[![Gitter chat](https://badges.gitter.im/mokhan/tfa.png)](https://gitter.im/mokhan/tfa)
 
 This CLI helps to manage your one time passwords for different accounts/environments.
 The goal of this tool is to help you generate one time passwords quickly
