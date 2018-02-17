@@ -25,7 +25,8 @@ module TFA
       decipher.decrypt
       decipher.key = digest
       decipher.iv = Base64.decode64(data[:iv])
-      IO.write(@original.path, decipher.update(Base64.decode64(data[:cipher_text])) + decipher.final)
+      plain_text = decipher.update(Base64.decode64(data[:cipher_text]))
+      IO.write(@original.path, plain_text + decipher.final)
     end
 
     def encrypted?

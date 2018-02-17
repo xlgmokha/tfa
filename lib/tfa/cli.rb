@@ -117,12 +117,11 @@ module TFA
     end
 
     def ensure_upgraded!
-      unless upgraded?
-        say_status :error, "Use the `upgrade` command to upgrade your database.", :red
-        false
-      else
-        true
-      end
+      return true if upgraded?
+
+      error = "Use the `upgrade` command to upgrade your database."
+      say_status :error, error, :red
+      false
     end
 
     def upgraded?
