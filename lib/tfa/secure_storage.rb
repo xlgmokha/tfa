@@ -61,6 +61,10 @@ module TFA
       result
     end
 
+    def respond_to_missing?(method, *)
+      @original.respond_to?(method)
+    end
+
     def digest
       @digest ||= Digest::SHA256.digest(@passphrase_request.call)
     end
