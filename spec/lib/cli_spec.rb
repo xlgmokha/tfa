@@ -61,17 +61,6 @@ module TFA
           expect(subject.totp(key)).to eql(code_for(dev_secret))
         end
       end
-
-      context "when no key is given" do
-        it "returns a time based one time password for all keys" do
-          subject.add(SecureRandom.uuid, dev_secret)
-          subject.add(SecureRandom.uuid, prod_secret)
-
-          result = subject.totp.to_s
-          expect(result).to include(code_for(dev_secret))
-          expect(result).to include(code_for(prod_secret))
-        end
-      end
     end
 
     describe "#destroy" do
