@@ -24,20 +24,17 @@ module TFA
     desc "show NAME", "shows the secret for the given key"
     method_option :format, default: "raw", enum: ["raw", "qrcode", "uri"], desc: "The format to export"
     def show(name = nil)
-      if name
-        secret = storage.secret_for(name)
-        case options[:format]
-        when "qrcode"
-          RQRCode::QRCode.new(uri_for(name, secret)).as_ansi(
-            light: "\033[47m", dark: "\033[40m", fill_character: '  ', quiet_zone_size: 1
-          )
-        when "uri"
-          uri_for(name, secret)
-        else
-          secret
-        end
+      return storage.all.map { |x| x.keys }.flatten.sort unless name
+
+      case options[:format]
+      when "qrcode"
+        RQRCode::QRCode.new(uri_for(name, storage.secret_for(name))).as_ansi(
+          light: "\033[47m", dark: "\033[40m", fill_character: '  ', quiet_zone_size: 1
+        )
+      when "uri"
+        uri_for(name, storage.secret_for(name))
       else
-        storage.all.map { |x| x.keys }.flatten.sort
+        storage.secret_for(name)
       end
     end
 
