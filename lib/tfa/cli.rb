@@ -26,7 +26,9 @@ module TFA
         case options[:format]
         when "qrcode"
           require 'rqrcode'
-          RQRCode::QRCode.new("otpauth://totp/unknown@example.org?secret=#{secret}&issuer=#{name}").as_ansi
+          RQRCode::QRCode.new("otpauth://totp/unknown@example.org?secret=#{secret}&issuer=#{name}").as_ansi(
+            light: "\033[47m", dark: "\033[40m", fill_character: '  ', quiet_zone_size: 1
+          )
         else
           secret
         end
