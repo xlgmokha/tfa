@@ -19,8 +19,20 @@ module TFA
     end
 
     desc "show NAME", "shows the secret for the given key"
+    method_option :format, default: "raw", enum: ["raw", "qrcode"], desc: "The format to export"
     def show(name = nil)
-      name ? storage.secret_for(name) : storage.all.map { |x| x.keys }.flatten.sort
+      if name
+        secret = storage.secret_for(name)
+        case options[:format]
+        when "qrcode"
+          require 'rqrcode'
+          RQRCode::QRCode.new("otpauth://totp/unknown@example.org?secret=#{secret}&issuer=#{name}").as_ansi
+        else
+          secret
+        end
+      else
+        storage.all.map { |x| x.keys }.flatten.sort
+      end
     end
 
     desc "totp NAME", "generate a Time based One Time Password using the secret associated with the given NAME."
