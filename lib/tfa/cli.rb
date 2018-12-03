@@ -1,4 +1,7 @@
-require "thor"
+require 'rqrcode'
+require 'socket'
+require 'thor'
+require 'uri'
 
 module TFA
   class CLI < Thor
@@ -19,16 +22,17 @@ module TFA
     end
 
     desc "show NAME", "shows the secret for the given key"
-    method_option :format, default: "raw", enum: ["raw", "qrcode"], desc: "The format to export"
+    method_option :format, default: "raw", enum: ["raw", "qrcode", "uri"], desc: "The format to export"
     def show(name = nil)
       if name
         secret = storage.secret_for(name)
         case options[:format]
         when "qrcode"
-          require 'rqrcode'
-          RQRCode::QRCode.new("otpauth://totp/unknown@example.org?secret=#{secret}&issuer=#{name}").as_ansi(
+          RQRCode::QRCode.new(uri_for(name, secret)).as_ansi(
             light: "\033[47m", dark: "\033[40m", fill_character: '  ', quiet_zone_size: 1
           )
+        when "uri"
+          uri_for(name, secret)
         else
           secret
         end
@@ -140,6 +144,10 @@ module TFA
 
     def upgraded?
       !File.exist?(pstore_path) && File.exist?(secure_path)
+    end
+
+    def uri_for(issuer, secret)
+      URI.encode("otpauth://totp/#{issuer}/#{ENV['LOGNAME']}@#{Socket.gethostname}?secret=#{secret}&issuer=#{issuer}")
     end
   end
 end
