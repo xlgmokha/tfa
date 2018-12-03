@@ -41,14 +41,14 @@ module TFA
       end
 
       context "when no key is given" do
-        it "returns the secret for all keys" do
+        it "returns the name of each item" do
           key = SecureRandom.uuid
           subject.add(key, dev_secret)
           subject.add("production", prod_secret)
 
           result = subject.show.to_s
-          expect(result).to include(dev_secret)
-          expect(result).to include(prod_secret)
+          expect(result).to include(key)
+          expect(result).to include("production")
         end
       end
     end

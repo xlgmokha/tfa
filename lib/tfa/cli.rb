@@ -20,7 +20,7 @@ module TFA
 
     desc "show NAME", "shows the secret for the given key"
     def show(name = nil)
-      name ? storage.secret_for(name) : storage.all
+      name ? storage.secret_for(name) : storage.all.map { |x| x.keys }.flatten.sort
     end
 
     desc "totp NAME", "generate a Time based One Time Password using the secret associated with the given NAME."
